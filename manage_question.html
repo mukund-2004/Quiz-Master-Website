@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Manage Questions</h2>
+
+<!-- ✅ Select Subject -->
+<form method="GET">
+    <label>Select Subject:</label>
+    <select name="subject_id" onchange="this.form.submit()">
+        <option value="">--Select Subject--</option>
+        {% for subject in subjects %}
+        <option value="{{ subject.id }}" {% if subject.id == selected_subject_id|int %}selected{% endif %}>{{ subject.subject_name }}</option>
+        {% endfor %}
+    </select>
+</form>
+
+<!-- ✅ Select Chapter (Visible only if Subject is Selected) -->
+{% if selected_subject_id %}
+<form method="GET">
+    <input type="hidden" name="subject_id" value="{{ selected_subject_id }}">
+    <label>Select Chapter:</label>
+    <select name="chapter_id" onchange="this.form.submit()">
+        <option value="">--Select Chapter--</option>
+        {% for chapter in chapters %}
+        <option value="{{ chapter.id }}" {% if chapter.id == selected_chapter_id|int %}selected{% endif %}>{{ chapter.chapter_name }}</option>
+        {% endfor %}
+    </select>
+</form>
+{% endif %}
+
+<!-- ✅ Display Questions (Only if Chapter is Selected) -->
+{% if selected_chapter_id and questions %}
+<h3>Questions for Selected Chapter</h3>
+<table border="1">
+    <tr>
+        <th>Question</th>
+        <th>Options</th>
+        <th>Correct Answer</th>
+        <th>Actions</th>
+    </tr>
+    {% for question in questions %}
+    <tr>
+        <td>{{ question.question_text }}</td>
+        <td>
+            A) {{ question.option_a }} <br>
+            B) {{ question.option_b }} <br>
+            C) {{ question.option_c }} <br>
+            D) {{ question.option_d }}
+        </td>
+        <td>{{ question.correct_option }}</td>
+        <td>
+            <!-- ✅ Edit Button -->
+            <button onclick="showEditForm({{ question.id }})">Edit</button>
+
+            <!-- ✅ Delete Button -->
+            <form method="POST" action="{{ url_for('delete_question', question_id=question.id) }}" onsubmit="return confirm('Are you sure?');">
+    <button type="submit">Delete</button>
+</form>
+
+
+            <!-- ✅ Hidden Edit Form (Appears on Button Click) -->
+            <form method="POST" action="{{ url_for('edit_question') }}" id="edit-form-{{ question.id }}" style="display:none;">
+             
+               <input type="hidden" name="question_id" value="{{ question.id }}">
+
+                <input type="text" name="new_question_text" value="{{ question.question_text }}">
+                <input type="text" name="option_a" value="{{ question.option_a }}">
+                <input type="text" name="option_b" value="{{ question.option_b }}">
+                <input type="text" name="option_c" value="{{ question.option_c }}">
+                <input type="text" name="option_d" value="{{ question.option_d }}">
+                <input type="text" name="correct_option" value="{{ question.correct_option }}">
+                <button type="submit">Save</button>
+            </form>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+<!-- ✅ JavaScript for Edit Form -->
+<script>
+function showEditForm(questionId) {
+    document.getElementById('edit-form-' + questionId).style.display = 'block';
+}
+</script>
+
+{% elif selected_chapter_id %}
+<p>No questions available for this chapter.</p>
+{% endif %}
+
+{% endblock %}

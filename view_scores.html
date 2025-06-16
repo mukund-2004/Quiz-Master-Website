@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h2>Your Scores</h2>
+
+    {% if scores %}
+        <table border="1">
+            <tr>
+                <th>Chapter Name</th>
+                <th>Score</th>
+            </tr>
+            {% for score in scores %}
+                <tr>
+                    <td>{{ score[1] }}</td>  <!-- Chapter Name -->
+                    <td>{{ score[2] }}</td>  <!-- Score -->
+                </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+        <p>No scores available.</p>
+    {% endif %}
+
+    <a href="{{ url_for('user_dashboard') }}">Back to Dashboard</a>
+{% endblock %}

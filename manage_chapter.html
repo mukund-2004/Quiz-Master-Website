@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="card shadow p-4 mt-4 mx-auto" style="max-width: 600px;">
+        <h2 class="text-center mb-4">Manage Chapters</h2>
+
+        <!-- Subject Selection -->
+        <form method="GET" action="{{ url_for('manage_chapters') }}">
+            <div class="mb-3">
+                <label for="subject_id" class="form-label">Select Subject:</label>
+                <select name="subject_id" id="subject_id" class="form-select" required onchange="this.form.submit()">
+                    <option value="" disabled selected>-- Select a Subject --</option>
+                    {% for subject in subjects %}
+                        <option value="{{ subject.id }}" {% if subject.id|string == selected_subject_id %}selected{% endif %}>
+                            {{ subject.subject_name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+        </form>
+
+        <!-- Existing Chapters List -->
+        {% if selected_subject_id %}
+            <div class="mt-4">
+                <h5>Existing Chapters:</h5>
+                <ul class="list-group">
+                    {% if chapters %}
+                        {% for chapter in chapters %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span>{{ chapter.chapter_name }}</span>
+
+                                <!-- DELETE BUTTON -->
+                                <form method="POST" action="{{ url_for('manage_chapters', subject_id=selected_subject_id) }}" onsubmit="return confirm('Are you sure you want to delete this chapter?');">
+                                    <input type="hidden" name="delete_chapter_id" value="{{ chapter.id }}">
+                                    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                </form>
+                            </li>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-muted">No chapters available.</p>
+                    {% endif %}
+                </ul>
+            </div>
+        {% endif %}
+
+        <!-- Add Chapter Form -->
+        <div class="mt-4">
+            <h5>Add New Chapter</h5>
+            <form method="POST" action="{{ url_for('add_chapter') }}">
+                <input type="hidden" name="subject_id" value="{{ selected_subject_id }}">
+                <div class="mb-3">
+                    <input type="text" class="form-control" name="chapter_name" id="chapter_name" required minlength="3" maxlength="100" placeholder="Enter chapter name">
+                </div>
+                <div class="text-end">
+                    <button type="submit" class="btn btn-primary">Add Chapter</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

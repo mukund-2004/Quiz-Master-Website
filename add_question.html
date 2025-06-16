@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="card shadow p-4 mt-4 mx-auto" style="max-width: 600px;">
+        <h2 class="text-center mb-4">Add Question</h2>
+        <form method="POST" action="{{ url_for('add_question') }}">
+            
+            <!-- Select Subject -->
+            <div class="mb-3">
+                <label for="subject_id" class="form-label">Select Subject:</label>
+                <select name="subject_id" id="subject_id" class="form-select" required>
+                    <option value="" disabled selected>-- Select a Subject --</option>
+                    {% for subject in subjects %}
+                        <option value="{{ subject.id }}">{{ subject.subject_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Select Chapter -->
+            <div class="mb-3">
+                <label for="chapter_id" class="form-label">Select Chapter:</label>
+                <select name="chapter_id" id="chapter_id" class="form-select" required>
+                    <option value="" disabled selected>-- Select a Chapter --</option>
+                </select>
+            </div>
+
+            <!-- Question Text -->
+            <div class="mb-3">
+                <label for="question_text" class="form-label">Question:</label>
+                <textarea name="question_text" id="question_text" class="form-control" required minlength="5" placeholder="Enter question"></textarea>
+            </div>
+
+            <!-- Options -->
+            <div class="mb-3">
+                <label class="form-label">Options:</label>
+                <input type="text" name="option_a" class="form-control mb-2" required placeholder="Option A">
+                <input type="text" name="option_b" class="form-control mb-2" required placeholder="Option B">
+                <input type="text" name="option_c" class="form-control mb-2" required placeholder="Option C">
+                <input type="text" name="option_d" class="form-control mb-2" required placeholder="Option D">
+            </div>
+
+            <!-- Correct Answer Selection -->
+            <div class="mb-3">
+                <label for="correct_option" class="form-label">Correct Answer:</label>
+                <select name="correct_option" id="correct_option" class="form-select" required>
+                    <option value="" disabled selected>-- Select Correct Answer --</option>
+                    <option value="A">Option A</option>
+                    <option value="B">Option B</option>
+                    <option value="C">Option C</option>
+                    <option value="D">Option D</option>
+                </select>
+            </div>
+
+            <!-- Buttons -->
+            <div class="d-flex justify-content-between">
+                <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary">Add Question</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.getElementById('subject_id').addEventListener('change', function () {
+        let subjectId = this.value;
+        let chapterSelect = document.getElementById('chapter_id');
+
+        if (subjectId) {
+            fetch(`/get_chapters/${subjectId}`)
+                .then(response => response.json())
+                .then(data => {
+                    chapterSelect.innerHTML = '<option value="" disabled selected>-- Select a Chapter --</option>';
+                    data.chapters.forEach(chapter => {
+                        let option = document.createElement('option');
+                        option.value = chapter.id;
+                        option.textContent = chapter.name;
+                        chapterSelect.appendChild(option);
+                    });
+                })
+                .catch(error => console.error('Error fetching chapters:', error));
+        } else {
+            chapterSelect.innerHTML = '<option value="" disabled selected>-- Select a Chapter --</option>';
+        }
+    });
+</script>
+
+{% endblock %}

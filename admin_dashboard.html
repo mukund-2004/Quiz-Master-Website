@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h2 class="mb-4 text-center">Admin Dashboard</h2>
+
+    <div class="row">
+        <!-- Subjects Section -->
+        <div class="col-md-4">
+            <h3>Subjects</h3>
+            <ul class="list-group">
+                {% for subject in subjects %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    {{ subject.subject_name }}
+                    <div>
+                        <a href="{{ url_for('list_chapters', subject_id=subject.id) }}" class="btn btn-primary btn-sm">View</a>
+                        <form action="{{ url_for('delete_subject', subject_id=subject.id) }}" method="POST" class="d-inline">
+                            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                        </form>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+            <a href="{{ url_for('add_subject') }}" class="btn btn-success mt-3">Add Subject</a>
+        </div>
+
+        <!-- Chapters Section -->
+        <div class="col-md-4">
+            <h3>Chapters</h3>
+            <ul class="list-group">
+                {% for chapter in chapters %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    {{ chapter.chapter_name }} ({{ chapter.subject_name }})
+                    <div>
+                        <a href="{{ url_for('list_questions', chapter_id=chapter.id) }}" class="btn btn-primary btn-sm">View</a>
+                        <form action="{{ url_for('delete_chapter', chapter_id=chapter.id) }}" method="POST" class="d-inline">
+                            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                        </form>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+            <a href="{{ url_for('add_chapter') }}" class="btn btn-success mt-3">Add Chapter</a>
+        </div>
+
+<!-- Questions Section -->
+<div class="col-md-4">
+    <h3>Questions</h3>
+    <ul class="list-group">
+        {% for question in questions %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            {{ question.question_text[:50] }}...
+            <div>
+                <!-- Edit Question Button -->
+                <a href="{{ url_for('edit_question', question_id=question.id) }}" class="btn btn-primary btn-sm">Edit</a>
+
+                <!-- Delete Question Form -->
+                <form action="{{ url_for('delete_question', question_id=question.id) }}" method="POST" class="d-inline">
+                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this question?');">Delete</button>
+                </form>
+            </div>
+        </li>
+        {% endfor %}
+    </ul>
+
+    <!-- Add Question Button -->
+    <a href="{{ url_for('add_question') }}" class="btn btn-success mt-3">Add Question</a>
+
+    <!-- Manage All Questions Button -->
+    <a href="{{ url_for('manage_question') }}" class="btn btn-info mt-3">Manage Question</a>
+</div>
+
+
+{% endblock %}
